@@ -1,0 +1,39 @@
+name: Bug
+description: Something the system does that its specs say it doesn't.
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        A bug is a gap between a spec and reality. If no spec covers the
+        behavior, that may be the actual bug — say so. When the fix lands,
+        the PR updates the spec this bug vindicates, and the investigation
+        write-up moves to `docs/postmortems/` (write-once history).
+  - type: textarea
+    id: report
+    attributes:
+      label: Report
+      description: What happened, and the smallest way to make it happen again.
+      placeholder: |
+        Submitting the form twice quickly creates two identical rows.
+        Repro: open the form, click Save twice within ~500ms.
+    validations:
+      required: true
+  - type: textarea
+    id: expected-vs-actual
+    attributes:
+      label: Expected vs actual
+      description: What the spec says (cite it) vs what the system does.
+      placeholder: |
+        Spec (docs/specs/jobs/add.md): "double-submit cannot create duplicates."
+        Actual: two rows, two CREATED events.
+    validations:
+      required: true
+  - type: input
+    id: spec
+    attributes:
+      label: Spec this contradicts
+      description: Path to the spec — or "none yet", which is its own finding.
+      placeholder: docs/specs/<domain>/<feature>.md
+    validations:
+      required: true

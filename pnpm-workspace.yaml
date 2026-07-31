@@ -1,0 +1,24 @@
+packages:
+  - "apps/*"
+  - "packages/*"
+
+allowBuilds:
+  # embedded-postgres ships 8 platform-specific optional dependencies,
+  # each with a postinstall script. allowBuilds does not support glob
+  # patterns, so each must be listed explicitly by name.
+  "@embedded-postgres/darwin-arm64": true
+  "@embedded-postgres/darwin-x64": true
+  "@embedded-postgres/linux-arm64": true
+  "@embedded-postgres/linux-arm": true
+  "@embedded-postgres/linux-ia32": true
+  "@embedded-postgres/linux-ppc64": true
+  "@embedded-postgres/linux-x64": true
+  "@embedded-postgres/windows-x64": true
+  "@prisma/client": true
+  "@prisma/engines": true
+  "esbuild": true
+  "prisma": true
+  "sharp": true
+
+overrides:
+  "pglite-prisma-adapter>@prisma/driver-adapter-utils": 6.19.3

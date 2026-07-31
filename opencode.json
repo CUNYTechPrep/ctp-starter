@@ -1,0 +1,8 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "default_agent": "plan",
+  "subagent_depth": 2,
+  "skills": {
+    "paths": [".opencode/skill"]
+  }
+}

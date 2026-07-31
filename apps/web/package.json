@@ -1,0 +1,34 @@
+{
+  "name": "@project/web",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "next dev --turbopack",
+    "build": "next build",
+    "start": "next start",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf .next"
+  },
+  "dependencies": {
+    "next": "15.5.21",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "@prisma/client": "6.19.3",
+    "@project/db": "workspace:*",
+    "@project/services": "workspace:*",
+    "@project/domain": "workspace:*",
+    "@project/auth": "workspace:*",
+    "@project/log": "workspace:*",
+    "@electric-sql/pglite": "^0.5.4",
+    "pglite-prisma-adapter": "0.6.1",
+    "pg": "^8.13.0",
+    "@prisma/adapter-pg": "6.19.3"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.0.0",
+    "tailwindcss": "^4.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0"
+  }
+}

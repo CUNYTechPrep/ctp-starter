@@ -1,0 +1,56 @@
+name: Feature
+description: A shippable behavior — the seed for a spec.
+labels: ["feature"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        An issue is a **seed, not a spec**. It carries enough for the working
+        session to draft the real spec (`docs/specs/_template-feature.md`);
+        behavior details, examples, and constraints get worked out there.
+        The spec lands in the same PR as the code and becomes the source of
+        truth. Linkage is one-way: this issue cites the spec; the spec never
+        mentions this issue.
+  - type: textarea
+    id: why
+    attributes:
+      label: Why
+      description: One short paragraph — the user-visible reason. No implementation.
+      placeholder: Coaches want spreadsheets. One click, opens in Sheets, done.
+    validations:
+      required: true
+  - type: textarea
+    id: behavior-sketch
+    attributes:
+      label: Behavior sketch
+      description: 2–4 bullets of user-visible behavior. Seeds the spec's Behavior section.
+      placeholder: |
+        - `GET /api/.../export.csv` downloads the current user's rows from a plain link.
+        - Signed-out gets the standard 401.
+    validations:
+      required: true
+  - type: input
+    id: out-of-scope
+    attributes:
+      label: Out of scope
+      description: Adjacent behavior this deliberately does not cover.
+      placeholder: filters, streaming, other formats.
+    validations:
+      required: true
+  - type: textarea
+    id: verify-sketch
+    attributes:
+      label: Verify sketch
+      description: How we'll know it's true. Seeds the spec's Verify section.
+      placeholder: |
+        - `pnpm test` — serializer units + integration (foreign rows never appear).
+    validations:
+      required: true
+  - type: input
+    id: spec-path
+    attributes:
+      label: Planned spec path
+      description: Where the spec will live once drafted.
+      placeholder: docs/specs/<domain>/<feature>.md
+    validations:
+      required: true

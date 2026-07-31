@@ -1,0 +1,14 @@
+// The data model for the entire app. Boilerplate — empty schema with no models.
+// Example branches add their own models, enums, and migrations here.
+
+generator client {
+  provider        = "prisma-client-js"
+  engineType      = "library"
+  previewFeatures = ["driverAdapters"]
+  output          = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}

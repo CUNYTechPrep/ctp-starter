@@ -1,0 +1,23 @@
+{
+  "name": "@project/services",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@azure/storage-blob": "^12.26.0",
+    "@azure/storage-queue": "^12.25.0",
+    "pg": "^8.13.0",
+    "@project/log": "workspace:*"
+  },
+  "devDependencies": {
+    "vitest": "^4.0.0",
+    "@types/pg": "^8.11.0"
+  }
+}

@@ -1,0 +1,14 @@
+node_modules/
+.next/
+.pglite/
+.env*
+!.env.example
+*.tsbuildinfo
+next-env.d.ts
+.azurite/
+.pgdata/
+# Prisma generated client
+packages/db/src/generated/
+dist/
+.turbo
+.DS_Store
