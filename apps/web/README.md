@@ -41,4 +41,4 @@ uses Turbopack (`--turbopack`).
 - A new route goes in `app/api/`.
 - A new Client Component goes in `components/`.
 - Routes are Server Components. Forms and interactivity are Client Components.
-  The split is Week 5's topic.
+  The split is Week 3's topic.

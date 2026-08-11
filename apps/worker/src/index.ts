@@ -1,14 +1,75 @@
-// The background worker. Polls the jobs queue and processes messages.
-// Boilerplate — minimal polling skeleton that logs received messages and
-// discards them. Example branches add typed handlers (thumbnail generation,
-// etc.) by matching on message.type and calling handle functions.
-import { queueClient, decodeJobMessage, type JobMessage } from "@project/services";
+// The background worker. Polls the jobs queue and processes messages — here,
+// thumbnail generation. Runs as a separate process with its own database
+// client; the web app finds out about progress the same way the browser
+// does, through events.
+
+import sharp from "sharp";
+import {
+  queueClient,
+  decodeJobMessage,
+  type JobMessage,
+  downloadAttachment,
+  uploadAttachment,
+  stagePayload,
+} from "@project/services";
+import { prisma } from "@project/db";
 import { log } from "@project/log";
 
 const POLL_MS = 2000;
+const THUMB_SIZE = 320;
 
 async function handle(msg: JobMessage): Promise<void> {
-  log.warn({ type: msg.type, keys: Object.keys(msg) }, "worker: unhandled message type — discarding");
+  switch (msg.type) {
+    case "thumbnail.create": {
+      const todoId = typeof msg.todoId === "string" ? msg.todoId : null;
+      const blobName = typeof msg.blobName === "string" ? msg.blobName : null;
+      if (!todoId || !blobName) {
+        log.warn({ msg }, "thumbnail.create missing todoId/blobName — skipping");
+        return;
+      }
+
+      const todo = await prisma.todo.findUnique({
+        where: { id: todoId },
+        select: { userId: true, title: true },
+      });
+      if (!todo) {
+        log.warn({ todoId }, "todo vanished before thumbnailing — skipping");
+        return;
+      }
+
+      await prisma.$transaction(async (tx) => {
+        await tx.todoEvent.create({ data: { todoId, type: "THUMBNAIL_STARTED" } });
+        await tx.$executeRaw`SELECT pg_notify('events', ${stagePayload(todo.userId, "THUMBNAIL_STARTED", { todoId, title: todo.title })})`;
+      });
+
+      const original = await downloadAttachment(blobName);
+      if (!original) {
+        log.warn({ todoId, blobName }, "original blob missing — skipping");
+        return;
+      }
+
+      const thumb = await sharp(original.data)
+        .resize(THUMB_SIZE, THUMB_SIZE, { fit: "cover" })
+        .webp({ quality: 80 })
+        .toBuffer();
+
+      const thumbName = await uploadAttachment(todoId, "thumb.webp", "image/webp", thumb.buffer as ArrayBuffer);
+
+      await prisma.$transaction(async (tx) => {
+        await tx.todo.update({ where: { id: todoId }, data: { thumbnailName: thumbName } });
+        await tx.todoEvent.create({ data: { todoId, type: "THUMBNAIL_READY" } });
+        await tx.$executeRaw`SELECT pg_notify('events', ${stagePayload(todo.userId, "THUMBNAIL_READY", { todoId, title: todo.title })})`;
+      });
+
+      log.info({ todoId, thumbName, bytes: thumb.length }, "thumbnail generated");
+      return;
+    }
+
+    default: {
+      log.warn({ type: msg.type }, "worker: unhandled message type — discarding");
+      return;
+    }
+  }
 }
 
 async function main() {

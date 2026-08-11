@@ -1,8 +1,7 @@
 import { describe, it, expect, beforeAll } from "vitest";
 
-// Boilerplate integration smoke test: verifies the PGlite test door
-// and the three-door Prisma client work with an empty schema.
-// This test is inherited by all example branches.
+// Integration smoke test: verifies the PGlite test door and the three-door
+// Prisma client boot, and that migrations applied (the schema is queryable).
 
 type PrismaClient = import("@project/db").PrismaClient;
 let prisma: PrismaClient;
@@ -19,5 +18,10 @@ describe("prisma client (PGlite door)", () => {
   it("connects to an in-memory PGlite instance", async () => {
     const result = await prisma.$queryRaw<[{ "?column?": number }]>`SELECT 1`;
     expect(result[0]["?column?"]).toBe(1);
+  });
+
+  it("applied the migrations on boot", async () => {
+    // If 0001_init didn't run, this throws: no Todo table.
+    expect(await prisma.todo.count()).toBe(0);
   });
 });

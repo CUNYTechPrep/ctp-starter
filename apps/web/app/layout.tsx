@@ -4,8 +4,9 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Starter Skeleton",
-  description: "C12 Fall 2026 — every layer exists; the weeks make them deep.",
+  title: "Todos — Starter Example",
+  description:
+    "example/todo — username identity, todos, attachments, and live notifications on the starter skeleton.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

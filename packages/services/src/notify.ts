@@ -1,19 +1,26 @@
 // Live event subscription via Postgres LISTEN/NOTIFY. One shared connection
 // fans out pg_notify payloads to all SSE streams in the web app.
-// Boilerplate — generic channel. Example branches use a specific channel
-// name (e.g. "item_events") by editing the CHANNEL constant or accepting it
-// as a parameter.
+// The channel is generic; this branch scopes events by entityId = userId, so
+// one /api/events stream carries everything the signed-in user should hear.
 import { log } from "@project/log";
 import { Client } from "pg";
 
 const CHANNEL = "events";
 
-export function stagePayload(entityId: string, type: string): string {
-  return JSON.stringify({ entityId, type, at: new Date().toISOString() });
+// The wire shape: who it's for (entityId), what happened (type), when (at),
+// plus any extra fields the emitter wants the browser to have (todoId, title…).
+export type StageEvent = { entityId: string; type: string; at: string } & Record<string, unknown>;
+
+export function stagePayload(
+  entityId: string,
+  type: string,
+  extra: Record<string, unknown> = {}
+): string {
+  return JSON.stringify({ entityId, type, at: new Date().toISOString(), ...extra });
 }
 
 let listener: Client | null = null;
-type Handler = (n: { entityId: string; type: string; at: string }) => void;
+type Handler = (n: StageEvent) => void;
 
 export async function onStage(entityId: string, handler: Handler): Promise<() => void> {
   if (!listener) {
@@ -30,7 +37,7 @@ export async function onStage(entityId: string, handler: Handler): Promise<() =>
     log.info({ channel: CHANNEL }, "subscribed to pg_notify channel");
   }
 
-  const cb = (n: { entityId: string; type: string; at: string }) => {
+  const cb = (n: StageEvent) => {
     if (n.entityId === entityId) handler(n);
   };
   callbacks.add(cb);
