@@ -18,6 +18,8 @@ Each week of class goes deep on one layer that's already here under your feet.
 pnpm install
 pnpm prisma:generate     # builds the typed database client (empty schema — example branches add models)
 pnpm dev                 # starts web + YOUR OWN Postgres server + Azurite
+# In a separate terminal run this the first time you start your servers
+pnpm db:migrate
 ```
 
 `pnpm dev` starts **four processes**: the Next.js app, the background worker,
